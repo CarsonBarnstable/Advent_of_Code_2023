@@ -13,10 +13,12 @@ def main():
                     for col in cols:
                         if num_col[1] == col:  # updaing maximum
                             max_rgb[col] = max(max_rgb[col], int(num_col[0]))
-            
-            # determining if fair game
-            if all(num <= max_allowed for num, max_allowed in zip(max_rgb.values(), [12, 13, 14])):
-                sum_games += line_num+1  # adjusting for zero index
+
+            # summing power of min subes usable
+            product = 1
+            for max_used in max_rgb.values():
+                product *= max_used
+            sum_games += product
 
         print(sum_games)  # result
 
