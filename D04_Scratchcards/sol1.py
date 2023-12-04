@@ -10,8 +10,8 @@ def main():
             line[0] = line[0].split(':')[1]
 
             # getting & saving correct nums
-            mine_nums = set(line[0].strip().split(' '))
-            card_nums = set(line[1].strip().split(' '))
+            mine_nums = set(line[0].strip().replace("  ", " ").split(' '))
+            card_nums = set(line[1].strip().replace("  ", " ").split(' '))
 
             # saving my nums, card nums, and the matching numbers
             cards.append((mine_nums, card_nums, (mine_nums & card_nums)))
@@ -21,8 +21,6 @@ def main():
     for card in cards:
         num_matches = len(card[2])  # number of matches
         score = 0 if num_matches == 0 else 2**(num_matches-1)
-        if '' in card[2]:  # null adjustment
-            score //= 2
         score_sum += score  # incrementing score sum
 
     # result
