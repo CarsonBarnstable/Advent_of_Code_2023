@@ -17,6 +17,7 @@ def main():
             updated_val = update_val_with_transformation(updated_val, transformation)
         distances.append(updated_val)
 
+    # result
     print(min(distances))
 
 
