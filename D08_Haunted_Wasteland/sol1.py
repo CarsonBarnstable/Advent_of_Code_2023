@@ -1,15 +1,17 @@
 def main():
     path_to_from = ("AAA", "ZZZ")
     paths = {}
+
+    # getting file input
     with open("input.txt") as f:
         choices = f.readline().strip()
         f.readline()  # empty line
         for line in f.readlines():
-            # GXF = (XQB, GFH)
+            # Format:  ||GXF = (XQB, GFH)||
             line = line.strip('\n').strip(')').split(" = (")
             paths[line[0]] = tuple(line[1].split(", "))
 
-    # traverse from AAA to ZZZ
+    # traversing from AAA to ZZZ
     dist_count = 0
     current_ch = path_to_from[0]
     while current_ch != path_to_from[1]:
