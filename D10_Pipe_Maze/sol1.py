@@ -52,7 +52,6 @@ def find_start_neighbor(start_pos, bounds_r, bounds_c, grid):
 
 
 def find_next_pos(current, previous, bounds_r, bounds_c, grid):
-
     new_r, new_c = current[0]-1, current[1]  # above current
     if new_r in bounds_r and new_c in bounds_c:
         if grid[current[0]][current[1]] in {'|', 'L', 'J'}:
