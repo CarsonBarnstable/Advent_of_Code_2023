@@ -1,6 +1,7 @@
 def main():
     # controlling vars
     galaxy_char = '#'
+    # galaxy_extra = 2-1
     galaxy_extra = 1000000-1
 
     # taking in input
