@@ -11,23 +11,19 @@ def main():
                 new_grid.append([char for char in line.strip('\n')])
         grids.append(new_grid)  # last one in file
 
-    # vertical lines of reflection
-    vertical_reflections = []
-    for grid in grids:
-        vertical_reflections.append(get_horiz_reflection(grid))
-
     # transposing matrix (swapping rows/columns
     grids_transposed = []
     for grid in grids:
         grids_transposed.append([list(cols) for cols in zip(*grid)])
 
-    # horizontal lines of reflection
-    horizontal_reflections = []
-    for transposed_grid in grids_transposed:
-        horizontal_reflections.append(get_horiz_reflection(transposed_grid))
+    # vertical lines of reflection
+    vertical_reflections, horizontal_reflections = [], []
+    for grid, t_grid in zip(grids, grids_transposed):
+        vertical_reflections.append(get_horiz_reflection(grid))
+        horizontal_reflections.append(get_horiz_reflection(t_grid))
 
     # printout w/ lines
-    print_reflections(grids, horizontal_reflections, vertical_reflections)
+    # print_reflections(grids, horizontal_reflections, vertical_reflections)
 
     # computing sums and resultand
     h_sum = sum(horizontal_reflections)
