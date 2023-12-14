@@ -16,7 +16,7 @@ def main():
     for grid in grids:
         grids_transposed.append([list(cols) for cols in zip(*grid)])
 
-    # vertical lines of reflection
+    # lines of reflection
     vertical_reflections, horizontal_reflections = [], []
     for grid, t_grid in zip(grids, grids_transposed):
         vertical_reflections.append(get_horiz_reflection(grid))
