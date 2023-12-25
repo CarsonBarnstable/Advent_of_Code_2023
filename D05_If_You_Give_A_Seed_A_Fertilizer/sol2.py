@@ -1,5 +1,5 @@
 def main():
-    jump_factor = 1000
+    chosen_jump_factor = 1000
 
     with open("input.txt") as f:
         # getting seeds
@@ -12,7 +12,7 @@ def main():
             transformations.append(get_next_transform(f))
 
     # getting distances per seed
-    min_distance, min_seed = find_mins_from_seed_transform(seeds, transformations, jump_factor=jump_factor)
+    min_distance, min_seed = find_mins_from_seed_transform(seeds, transformations, jump_factor=chosen_jump_factor)
 
     # repeating on closest range
     min_distance, min_seed = find_mins_from_seed_transform(seeds, transformations, guess=min_seed)
