@@ -1,7 +1,3 @@
-import sys
-sys.setrecursionlimit(500000)
-
-
 moves = {"U": [-1, 0], "D": [1, 0], "L": [0, -1], "R": [0, 1]}
 
 
@@ -14,6 +10,7 @@ def main():
             entry = {"dir": details[0], "dist": int(details[1]), "hex": details[2].strip('(#').strip(')')}
             paths.append(entry)
 
+    # saved as a "backup" to both parts' code
     # # * * * * * * * * PART 1 SOLUTION * * * * * * * *
     #
     # # taking note of visited nodes
@@ -43,12 +40,12 @@ def main():
 
         # solution
         print("Part", part, ":", len(complete_fill))
-        # print_grid(complete_fill)
 
 
 def extract_instructions(paths, part):
     instructions = []
     for path in paths:
+        # different input format depending on part
         if part == 1:
             instructions.append({"dir": path["dir"], "dist": path["dist"]})
         if part == 2:
@@ -60,10 +57,10 @@ def get_visited(instructions, start=(0, 0)):
     visited = set()
     current_pos = start
     for instruction in instructions:
-        shift = moves[instruction["dir"]]
         while instruction["dist"] > 0:
+            # following directional path
             visited.add(current_pos)
-            current_pos = tuple([c+s for c, s in zip(current_pos, shift)])
+            current_pos = tuple([c+s for c, s in zip(current_pos, moves[instruction["dir"]])])
             instruction["dist"] -= 1
     return visited
 
@@ -89,14 +86,17 @@ def print_grid(highlighted, highlight=(0, 0)):
 def flood_fill(edge, fill):
     stack = [(0, 0)]
     while len(stack) > 0:
+        # performing act on one pos at a time
         pos = stack.pop()
         if pos in fill:
             continue
         fill.add(pos)
+        # adding surrounding points
         for direction in "UDLR":
             new_pos = tuple([c+s for c, s in zip(pos, moves[direction])])
             if new_pos not in edge:
                 stack.append(new_pos)
+    # final result
     return fill
 
 
