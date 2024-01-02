@@ -9,6 +9,13 @@ def main():
     flows = extract_flows_from_lines(flow_lines)
     ratings = extract_ratings_from_lines(rating_lines)
 
+    # getting resultant 'destination' per part
+    results = [get_destination_from_part(part, flows) for part in ratings]
+
+    # calculating resultant sum
+    summ = sum_accepted(results, ratings)
+    print("Part 1:", summ)
+
 
 def extract_flows_from_lines(flow_lines):
     # parses flow lines according to problem description
@@ -34,9 +41,33 @@ def extract_ratings_from_lines(rating_lines):
         new_dict = {}
         for part in line:
             var, val = part.split('=')
-            new_dict[var] = val
+            new_dict[var] = int(val)
         ratings.append(new_dict)
     return ratings
+
+
+def get_destination_from_part(part, flows, start_target="in", goal_vals=('A', 'R')):
+    to_go_to = start_target
+    while to_go_to not in goal_vals:
+        for potential_branch in flows[to_go_to]:
+            if evaluate(potential_branch[0], part):
+                to_go_to = potential_branch[1]
+                break
+    return to_go_to
+
+
+def evaluate(conditional, part, default="else", vals="xmas"):
+    if conditional == default:
+        return True
+    var, comp, comp_value = conditional[:1], conditional[1:2], int(conditional[2:])
+    if comp == "<":
+        return any(part[var] < comp_value and var == i_var for i_var in vals)
+    if comp == ">":
+        return any(part[var] > comp_value and var == i_var for i_var in vals)
+
+
+def sum_accepted(results, ratings, accept="A"):
+    return sum(sum(rating.values()) if result in accept else 0 for rating, result in zip(ratings, results))
 
 
 if __name__ == "__main__":
