@@ -16,6 +16,10 @@ def main():
     summ = sum_accepted(results, ratings)
     print("Part 1:", summ)
 
+    # Part 2 Note
+    print("Part 2 is just a re-work of Day 5's Part 2")
+    print("Due to Time Constraints, it will be skipped for now")
+
 
 def extract_flows_from_lines(flow_lines):
     # parses flow lines according to problem description
