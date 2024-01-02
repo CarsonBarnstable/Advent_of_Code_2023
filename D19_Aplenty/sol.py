@@ -51,6 +51,7 @@ def extract_ratings_from_lines(rating_lines):
 
 
 def get_destination_from_part(part, flows, start_target="in", goal_vals=('A', 'R')):
+    # finds resulting destination given an input part (and requisite flows)
     to_go_to = start_target
     while to_go_to not in goal_vals:
         for potential_branch in flows[to_go_to]:
@@ -61,6 +62,7 @@ def get_destination_from_part(part, flows, start_target="in", goal_vals=('A', 'R
 
 
 def evaluate(conditional, part, default="else", vals="xmas"):
+    # "safely" evaluates conditional from input condition
     if conditional == default:
         return True
     var, comp, comp_value = conditional[:1], conditional[1:2], int(conditional[2:])
@@ -71,6 +73,7 @@ def evaluate(conditional, part, default="else", vals="xmas"):
 
 
 def sum_accepted(results, ratings, accept="A"):
+    # sums all ratings from accepted parts
     return sum(sum(rating.values()) if result in accept else 0 for rating, result in zip(ratings, results))
 
 
