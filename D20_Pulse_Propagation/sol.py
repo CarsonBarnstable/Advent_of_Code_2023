@@ -55,6 +55,8 @@ def main():
         for n in range(reps):
             _, _p2_ff, _p2_cj = push_broadcast(start_symbols, _p2_ff, _p2_cj, p2_count=n, p2_nodes=notable_target)
         print()
+
+    # now I have a direction / idea
     """
     From my modifications, I can see that there is definitely a pattern in the frequency of those inputs
     kr occurs at 2760 + 3761*n
@@ -70,6 +72,13 @@ def main():
     for val in [3761, 4091, 3767, 4001]:
         lcm = get_lcm(lcm, val)
     print("Part 2 Solution:", lcm)
+
+    # thoughts
+    """
+    I don't like the way I had to do these things manually, and couldn't "automate" the solution
+    But I got there, and it works, soooooooo
+    I am happy to accept my solution as valid for now
+    """
 
 
 # helper LCM function * from day 8! *
