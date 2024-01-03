@@ -32,7 +32,7 @@ def main():
     # loop of chosen number of iterations
     _p1_ff, _p1_cj = flip_flops, conjunctions
     for _ in range(REPEATS):
-        res_counts, _p1_ff, _p1_cj = push_broadcast_button(start_symbols, _p1_ff, _p1_cj)
+        res_counts, _p1_ff, _p1_cj = push_broadcast(start_symbols, _p1_ff, _p1_cj)
         counter = {sig: counter[sig]+res_counts[sig] for sig in (LOW, HIGH)}
 
     # result / solution
@@ -48,8 +48,43 @@ def main():
     And there will likely be a LCM solution or some sort of pattern that can be extrapolated
     """
 
+    _p2_ff, _p2_cj, reps = flip_flops, conjunctions, 18000
+    print("Part 2: Patterns")
+    for notable_target in ("kr", "zs", "kf", "qk"):
+        print("  ", notable_target, "test:  ", end="")
+        for n in range(reps):
+            _, _p2_ff, _p2_cj = push_broadcast(start_symbols, _p2_ff, _p2_cj, p2_count=n, p2_nodes=notable_target)
+        print()
+    """
+    From my modifications, I can see that there is definitely a pattern in the frequency of those inputs
+    kr occurs at 2760 + 3761*n
+    zs occurs at 1454 + 4091*n
+    kf occurs at 0669 + 3767*n
+    qk occurs at 1013 + 4001*n
+    The solution should be the LCM of those 4 periodic times?
+    ... Which it is.
+    """
 
-def push_broadcast_button(start_sym, ffs, cnjs):
+    # calculating LCM
+    lcm = 1
+    for val in [3761, 4091, 3767, 4001]:
+        lcm = get_lcm(lcm, val)
+    print("Part 2 Solution:", lcm)
+
+
+# helper LCM function * from day 8! *
+def get_lcm(x, y):
+    return abs(x * y) // get_gcd(x, y)
+
+
+# helper GCD function * from day 8! *
+def get_gcd(x, y):
+    while y:
+        x, y = y, x % y
+    return x
+
+
+def push_broadcast(start_sym, ffs, cnjs, p2_count=-1, p2_nodes=()):
     # conducts single press of a button, returning resultant state of game
     counter = {LOW: 0, HIGH: 0}
     counter[LOW] += 1
@@ -73,6 +108,9 @@ def push_broadcast_button(start_sym, ffs, cnjs):
                 to_do += [(LOW, new_t, target) for new_t in cnjs[target]["targets"]]
             else:
                 to_do += [(HIGH, new_t, target) for new_t in cnjs[target]["targets"]]
+                # part 2 bonus part
+                if target in p2_nodes and p2_count >= 0:
+                    print(p2_count, end=" ")
 
     return counter, ffs, cnjs
 
