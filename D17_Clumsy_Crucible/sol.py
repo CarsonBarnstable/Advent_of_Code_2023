@@ -11,7 +11,8 @@ def main():
     start, target = (0, 0), (len(grid)-1, len(grid[-1])-1)
 
     # performing both parts
-    print("Part 1:", modified_dijkstra(grid, _min=1, _max=3, _from=start, _to=target))
+    print("Part 1:", modified_dijkstra(grid, _min=0, _max=3, _from=start, _to=target))
+    print("Part 2:", modified_dijkstra(grid, _min=4, _max=10, _from=start, _to=target))
 
 
 def get_input_from(filename):
@@ -59,7 +60,7 @@ def modified_dijkstra(cost_grid, _min=0, _max=-1, _from=(0, 0), _to=(kinda_infin
         if cumulative_heat_loss > val_get(min_costs, coords)[direction]:
             continue
 
-        for dist in range(_min, _max+1):
+        for dist in range(1, _max+1):  # ** must start from 0 for "cost accumulation" **
             # moving in the possible directions
             r, c = (coord + add*dist for coord, add in zip(coords, directions[direction]))
             if r < 0 or r >= len(cost_grid) or c < 0 or c >= len(cost_grid[-1]):
@@ -68,6 +69,10 @@ def modified_dijkstra(cost_grid, _min=0, _max=-1, _from=(0, 0), _to=(kinda_infin
             # updating to "new position value"
             cumulative_heat_loss += val_get(cost_grid, (r, c))
 
+            # ** now continuing if not above min allowed **
+            if dist < _min:
+                continue
+
             # traversing in new directions from the current position
             for new_direction in valid_dirs[direction]:
                 if cumulative_heat_loss < val_get(min_costs, (r, c))[new_direction]:
@@ -75,7 +80,7 @@ def modified_dijkstra(cost_grid, _min=0, _max=-1, _from=(0, 0), _to=(kinda_infin
                     to_traverse.add((cumulative_heat_loss, (r, c), new_direction))
 
     # after all possible positions have been visited
-    return min(val_get(min_costs, _to)[d] for d in _start_dirs)
+    return min(val_get(min_costs, _to)[d] for d in directions.keys())  # just to be safe
 
 
 if __name__ == "__main__":
