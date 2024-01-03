@@ -10,7 +10,7 @@ def main():
     grid = get_input_from("input.txt")
     start, target = (0, 0), (len(grid)-1, len(grid[-1])-1)
 
-    # performing both parts
+    # performing both parts (just different min/max parameters)
     print("Part 1:", modified_dijkstra(grid, _min=0, _max=3, _from=start, _to=target))
     print("Part 2:", modified_dijkstra(grid, _min=4, _max=10, _from=start, _to=target))
 
