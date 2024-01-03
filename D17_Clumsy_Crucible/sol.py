@@ -11,8 +11,8 @@ def main():
     start, target = (0, 0), (len(grid)-1, len(grid[-1])-1)
 
     # performing both parts
-    print("Part 1:", modified_dijkstra(grid, _min=0, _max=3, _from=start, _to=target))
-    print("Part 2:", modified_dijkstra(grid, _min=0, _max=3, _from=start, _to=target))
+    print("Part 1:", modified_dijkstra(grid, _min=1, _max=3, _from=start, _to=target))
+    # print("Part 2:", modified_dijkstra(grid, _min=1, _max=3, _from=start, _to=target))
 
 
 def get_input_from(filename):
@@ -48,18 +48,35 @@ def modified_dijkstra(cost_grid, _min=0, _max=-1, _from=(0, 0), _to=(kinda_infin
         val_get(min_costs, _from)[d] = 0
     # initializing all nodes' "visited" status
     visited = [[{d: False for d in directions} for _ in cost_grid[-1]] for __ in cost_grid]
-    to_traverse = [(0, (0, 0), d) for d in _start_dirs]
+    to_traverse = {(0, (0, 0), d) for d in _start_dirs}
 
     # performing basic (but modified) dijkstra
     while to_traverse:
         # getting a node that needs to be addressed
         cumulative_heat_loss, coords, direction = to_traverse.pop()
         val_get(visited, coords)[direction] = True
-        
-        print(cumulative_heat_loss, coords, direction)
 
+        # Skip if the current path's heat loss is not better than already known
+        if cumulative_heat_loss > val_get(min_costs, coords)[direction]:
+            continue
 
+        for dist in range(_min, _max+1):
+            # moving in the possible directions
+            r, c = (coord + add*dist for coord, add in zip(coords, directions[direction]))
+            if r < 0 or r >= len(cost_grid) or c < 0 or c >= len(cost_grid[-1]):
+                break  # but breaking if outside of grid
 
+            # updating to "new position value"
+            cumulative_heat_loss += val_get(cost_grid, (r, c))
+
+            # traversing in new directions from the current position
+            for new_direction in valid_dirs[direction]:
+                if cumulative_heat_loss < val_get(min_costs, (r, c))[new_direction]:
+                    val_get(min_costs, (r, c))[new_direction] = cumulative_heat_loss
+                    to_traverse.add((cumulative_heat_loss, (r, c), new_direction))
+
+    # after all possible positions have been visited
+    return min(val_get(min_costs, _to)[d] for d in _start_dirs)
 
 
 if __name__ == "__main__":
