@@ -12,7 +12,6 @@ def main():
 
     # performing both parts
     print("Part 1:", modified_dijkstra(grid, _min=1, _max=3, _from=start, _to=target))
-    # print("Part 2:", modified_dijkstra(grid, _min=1, _max=3, _from=start, _to=target))
 
 
 def get_input_from(filename):
