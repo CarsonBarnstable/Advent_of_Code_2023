@@ -3,16 +3,23 @@ X, Y, Z = 'x', 'y', 'z'
 
 def main():
     # getting pre-arranged input
-    blocks = sorted_block_input()
+    blocks = sorted_block_input("input.txt")
 
     # applying gravity
     dropped_blocks = apply_gravity_to(blocks)
 
     # calculating part 1 value
     critical_counter = 0
-    for i, block in enumerate(dropped_blocks):
+    for block in dropped_blocks:
         critical_counter += 1 if len(blocks_only_supported_by(dropped_blocks, block)) == 0 else 0
     print("Part 1:", critical_counter)
+
+    # calculating part 2 value
+    chain_react_counter = 0
+    print("This will take a few min...")
+    for i, base_block in enumerate(dropped_blocks):
+        chain_react_counter += get_waterfalling(base_block, dropped_blocks)
+    print("Part 2:", chain_react_counter)
 
 
 def sorted_block_input(file="input.txt"):
@@ -73,7 +80,10 @@ def apply_gravity_to(floating_blocks):
     return sitting_blocks
 
 
-def blocks_only_supported_by(all_blocks, supporting_block):
+def blocks_only_supported_by(all_blocks, supporting_block, invisible_coords=None):
+    if invisible_coords is None:
+        invisible_coords = []
+
     # creating note of "total mass of all blocks"
     solely_supported, entire_mass = [], set()
     for block in all_blocks:
@@ -91,9 +101,32 @@ def blocks_only_supported_by(all_blocks, supporting_block):
         else:  # vertical blocks (only need to check bottom block)
             support_blocks.append(min(coords_of(lb) for lb in one_down_block))
         # checking to see if condition still holds
-        if support_blocks and all(supported_by in [coords_of(supporting) for supporting in supporting_block] for supported_by in support_blocks):
+        if support_blocks and all(supported_by in [coords_of(supporting) for supporting in supporting_block] or supported_by in invisible_coords for supported_by in support_blocks):
             solely_supported.append(complete_block)
     return solely_supported
+
+
+def get_waterfalling(base_block, dropped_blocks):
+    to_drop = [base_block]
+    all_dropped = set()
+    all_dropped.add(dropped_blocks.index(base_block))
+    while to_drop:
+        invisible = []
+        for block_i in all_dropped:
+            invisible += [coords_of(block) for block in dropped_blocks[block_i]]
+        single_dropped = blocks_only_supported_by(dropped_blocks, to_drop.pop(0), invisible_coords=invisible)
+        for drop in all_dropped:
+            if drop in single_dropped:
+                single_dropped.remove(drop)
+        to_drop += [drop for drop in single_dropped]
+        old_dropped = set([a for a in all_dropped])
+        for drop in single_dropped:
+            all_dropped.add(dropped_blocks.index(drop))
+        if old_dropped == all_dropped:
+            break
+
+    all_dropped.remove(dropped_blocks.index(base_block))
+    return len(all_dropped)
 
 
 if __name__ == "__main__":
