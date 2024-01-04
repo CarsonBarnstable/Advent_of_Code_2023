@@ -7,8 +7,13 @@ def main():
 
     # applying gravity
     dropped_blocks = apply_gravity_to(blocks)
-    for block in dropped_blocks:
-        print(block)
+
+    # calculating part 1 value
+    critical_counter = 0
+    for i, block in enumerate(dropped_blocks):
+        critical_counter += 1 if len(blocks_only_supported_by(dropped_blocks, block)) == 0 else 0
+    print("Part 1:", critical_counter)
+    print("Must be Lower than 535")
 
 
 def sorted_block_input(file="input.txt"):
@@ -40,9 +45,17 @@ def sorted_block_input(file="input.txt"):
 
 
 def block_moved(full_block, dim, dist):
-    for individual_block in full_block:
-        individual_block[dim] += dist
-    return full_block
+    new_block = []
+    for sub_block in full_block:
+        new_dict = {}
+        for d in sub_block.keys():
+            new_dict[d] = sub_block[d]+dist if d == dim else sub_block[d]
+        new_block.append(new_dict)
+    return tuple(new_block)
+
+
+def coords_of(block):
+    return tuple(block.values())
 
 
 def apply_gravity_to(floating_blocks):
@@ -50,15 +63,33 @@ def apply_gravity_to(floating_blocks):
     sitting_blocks = []
     for i, full_block in enumerate(floating_blocks):
         # incrementing down until intersection...
-        while not any(tuple(coords.values()) in resting_mass or coords[Z] <= 0 for coords in full_block):
+        while not any(coords_of(block) in resting_mass or block[Z] <= 0 for block in full_block):
             full_block = block_moved(full_block, Z, -1)
         full_block = block_moved(full_block, Z, 1)  # then bumping back up
 
         # then adding block to bottom (unmoving) mass
         for sub_block in full_block:
-            resting_mass.add(tuple(sub_block.values()))
+            resting_mass.add(coords_of(sub_block))
         sitting_blocks.append(full_block)
     return sitting_blocks
+
+
+def blocks_only_supported_by(all_blocks, supporting_block):
+    # creating note of "total mass of all blocks"
+    solely_supported, entire_mass = [], set()
+    for block in all_blocks:
+        for sub_block in block:
+            entire_mass.add(coords_of(sub_block))
+    # then doing logic
+    for complete_block in all_blocks:
+        support_blocks = []
+        one_down_block = block_moved(complete_block, Z, -1)
+        for single_block in one_down_block:
+            if coords_of(single_block) in entire_mass:
+                support_blocks.append(coords_of(single_block))
+        if support_blocks and all(supported_by in [coords_of(supporting) for supporting in supporting_block] for supported_by in support_blocks):
+            solely_supported.append(complete_block)
+    return solely_supported
 
 
 if __name__ == "__main__":
