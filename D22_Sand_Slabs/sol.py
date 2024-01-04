@@ -13,7 +13,6 @@ def main():
     for i, block in enumerate(dropped_blocks):
         critical_counter += 1 if len(blocks_only_supported_by(dropped_blocks, block)) == 0 else 0
     print("Part 1:", critical_counter)
-    print("Must be Lower than 535")
 
 
 def sorted_block_input(file="input.txt"):
@@ -83,10 +82,15 @@ def blocks_only_supported_by(all_blocks, supporting_block):
     # then doing logic
     for complete_block in all_blocks:
         support_blocks = []
+        # taking note of all blocks that support 'complete block'
         one_down_block = block_moved(complete_block, Z, -1)
-        for single_block in one_down_block:
-            if coords_of(single_block) in entire_mass:
-                support_blocks.append(coords_of(single_block))
+        if all(one_down_block[-1][Z] == odb[Z] for odb in one_down_block):  # horizontal
+            for single_block in one_down_block:
+                if coords_of(single_block) in entire_mass:
+                    support_blocks.append(coords_of(single_block))
+        else:  # vertical blocks (only need to check bottom block)
+            support_blocks.append(min(coords_of(lb) for lb in one_down_block))
+        # checking to see if condition still holds
         if support_blocks and all(supported_by in [coords_of(supporting) for supporting in supporting_block] for supported_by in support_blocks):
             solely_supported.append(complete_block)
     return solely_supported
