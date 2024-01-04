@@ -5,6 +5,11 @@ def main():
     # getting pre-arranged input
     blocks = sorted_block_input()
 
+    # applying gravity
+    dropped_blocks = apply_gravity_to(blocks)
+    for block in dropped_blocks:
+        print(block)
+
 
 def sorted_block_input(file="input.txt"):
     # getting input
@@ -32,6 +37,28 @@ def sorted_block_input(file="input.txt"):
     # sorting all blocks by lowest z height
     block_blocks.sort(key=lambda x: min(c[Z] for c in x))
     return block_blocks
+
+
+def block_moved(full_block, dim, dist):
+    for individual_block in full_block:
+        individual_block[dim] += dist
+    return full_block
+
+
+def apply_gravity_to(floating_blocks):
+    resting_mass = set()
+    sitting_blocks = []
+    for i, full_block in enumerate(floating_blocks):
+        # incrementing down until intersection...
+        while not any(tuple(coords.values()) in resting_mass or coords[Z] <= 0 for coords in full_block):
+            full_block = block_moved(full_block, Z, -1)
+        full_block = block_moved(full_block, Z, 1)  # then bumping back up
+
+        # then adding block to bottom (unmoving) mass
+        for sub_block in full_block:
+            resting_mass.add(tuple(sub_block.values()))
+        sitting_blocks.append(full_block)
+    return sitting_blocks
 
 
 if __name__ == "__main__":
