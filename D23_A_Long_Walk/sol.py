@@ -9,26 +9,11 @@ def main():
     start, end = (0, maze[0].index(PATH)), (len(maze)-1, maze[-1].index(PATH))
 
     # * * * * * PART 1 SOLUTION * * * * *
-
-    # getting all 'vertextes' in graph-to-be
-    intersections = get_intersections(maze, moves)
-    intersections = [start]+intersections+[end]  # and adding both ends
-    # creating adjacency list to fully formulate graph
-    adjacents = get_adjacents(maze, intersections, moves)
-    # dfs exploration to find the longest path
-    print("Part 1:", dfs_longest(adjacents, start, end))
+    print("Part 1:", get_longest_path(maze, moves, start, end))
 
     # * * * * * PART 2 SOLUTION * * * * *
-
-    # updating stepping rules for part 2 (everything behaves like a path)
     moves = {pos: moves[PATH] for pos in moves.keys()}
-    # getting all 'vertextes' in graph-to-be
-    intersections = get_intersections(maze, moves)
-    intersections = [start]+intersections+[end]  # and adding both ends
-    # creating adjacency list to fully formulate graph
-    adjacents = get_adjacents(maze, intersections, moves)
-    # dfs exploration to find the longest path
-    print("Part 2:", dfs_longest(adjacents, start, end))
+    print("Part 2:", get_longest_path(maze, moves, start, end))
 
 
 def read_input(file="input.txt"):
@@ -37,6 +22,16 @@ def read_input(file="input.txt"):
         for line in f.readlines():
             grid.append([ch for ch in line.strip('\n')])
     return grid
+
+
+def get_longest_path(_maze, _moves, _from, _to):
+    # getting all 'vertextes' in graph-to-be
+    intersections = get_intersections(_maze, _moves)
+    intersections = [_from]+intersections+[_to]  # and adding both ends
+    # creating adjacency list to fully formulate graph
+    adjacents = get_adjacents(_maze, intersections, _moves)
+    # dfs exploration to find the longest path
+    return dfs_longest(adjacents, _from, _to)
 
 
 def get_intersections(grid, valid_moves):
@@ -99,9 +94,10 @@ def dfs_longest(adjacents, dfs_from, dfs_to, visited=None):
 
     dist = 0
     for neighbour in adjacents[dfs_from]:
-        # base case
+        # stopping any potential loops
         if neighbour in visited:
             continue
+        # base case
         if neighbour == dfs_to:
             return adjacents[dfs_from][dfs_to]
         # standard recursion
