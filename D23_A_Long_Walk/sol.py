@@ -1,10 +1,10 @@
 PATH, WALL = '.', '#'
-MOVES = {'<': [(0, -1)], '>': [(0, 1)], 'v': [(1, 0)], '^': [(-1, 0)], PATH: [(0, -1), (0, 1), (1, 0), (-1, 0)]}
+MOVES = {'<': [(0, -1)], '>': [(0, 1)], 'v': [(1, 0)], '^': [(-1, 0)], PATH: [(0, 1), (1, 0), (-1, 0), (0, -1)]}
 
 
 def main():
     # getting character-based input
-    maze = read_input("mini_input.txt")
+    maze = read_input("input.txt")
     start, end = (0, maze[0].index(PATH)), (len(maze)-1, maze[-1].index(PATH))
 
     # getting all 'vertextes' in graph-to-be
@@ -13,10 +13,9 @@ def main():
 
     # creating adjacency list to fully formulate graph
     adjacents = get_adjacents(maze, intersections)
-    print(intersections)
-    print(adjacents)
 
-    # def exploration to find the longest path
+    # dfs exploration to find the longest path
+    print("Part 1:", dfs_longest(adjacents, start, end))
 
 
 def read_input(file="input.txt"):
@@ -61,6 +60,8 @@ def get_adjacents(grid, vertices):
         to_expand_queue = [(0, vertex[0], vertex[1])]
         while to_expand_queue:
             dist, r_i, c_i = to_expand_queue.pop()
+            if (r_i, c_i) in already_visited:
+                continue
             already_visited.add((r_i, c_i))
             # if point of interest is a real vertex
             if (r_i, c_i) in vertices and dist != 0 and not (r_i, c_i) == vertex:
@@ -77,6 +78,22 @@ def get_adjacents(grid, vertices):
                 to_expand_queue.append((dist+1, row_u, col_u))
     # only once all the adjacencies are found
     return adjacent_vertices
+
+
+def dfs_longest(adjacents, dfs_from, dfs_to, visited=None):
+    if visited is None:
+        visited = set()
+
+    dist = 0
+    for neighbour in adjacents[dfs_from]:
+        # base case
+        if neighbour == dfs_to:
+            return adjacents[dfs_from][dfs_to]
+        # standard recursion
+        visited.add(neighbour)
+        dist = max(dist, adjacents[dfs_from][neighbour] + dfs_longest(adjacents, neighbour, dfs_to, visited=visited))
+        visited.remove(neighbour)
+    return dist
 
 
 if __name__ == "__main__":
