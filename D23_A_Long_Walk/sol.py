@@ -3,19 +3,32 @@ MOVES = {'<': [(0, -1)], '>': [(0, 1)], 'v': [(1, 0)], '^': [(-1, 0)], PATH: [(0
 
 
 def main():
+    moves = MOVES
     # getting character-based input
     maze = read_input("input.txt")
     start, end = (0, maze[0].index(PATH)), (len(maze)-1, maze[-1].index(PATH))
 
+    # * * * * * PART 1 SOLUTION * * * * *
+
     # getting all 'vertextes' in graph-to-be
-    intersections = get_intersections(maze)
+    intersections = get_intersections(maze, moves)
     intersections = [start]+intersections+[end]  # and adding both ends
-
     # creating adjacency list to fully formulate graph
-    adjacents = get_adjacents(maze, intersections)
-
+    adjacents = get_adjacents(maze, intersections, moves)
     # dfs exploration to find the longest path
     print("Part 1:", dfs_longest(adjacents, start, end))
+
+    # * * * * * PART 2 SOLUTION * * * * *
+
+    # updating stepping rules for part 2 (everything behaves like a path)
+    moves = {pos: moves[PATH] for pos in moves.keys()}
+    # getting all 'vertextes' in graph-to-be
+    intersections = get_intersections(maze, moves)
+    intersections = [start]+intersections+[end]  # and adding both ends
+    # creating adjacency list to fully formulate graph
+    adjacents = get_adjacents(maze, intersections, moves)
+    # dfs exploration to find the longest path
+    print("Part 2:", dfs_longest(adjacents, start, end))
 
 
 def read_input(file="input.txt"):
@@ -26,7 +39,7 @@ def read_input(file="input.txt"):
     return grid
 
 
-def get_intersections(grid):
+def get_intersections(grid, valid_moves):
     intersections = []
     row_bounds, col_bounds = range(len(grid)), range(len(grid[-1]))
     # going through all possible cells
@@ -37,7 +50,7 @@ def get_intersections(grid):
                 continue
             # and cell has 3 or more neighbors
             num_neighbors, row_u, col_u = 0, -1, -1
-            for row_shift, col_shift in MOVES[PATH]:
+            for row_shift, col_shift in valid_moves[PATH]:
                 row_u, col_u = row_i+row_shift, col_i+col_shift
                 if row_u not in row_bounds or col_u not in col_bounds:
                     continue
@@ -50,7 +63,7 @@ def get_intersections(grid):
     return intersections
 
 
-def get_adjacents(grid, vertices):
+def get_adjacents(grid, vertices, valid_moves):
     row_bounds, col_bounds = range(len(grid)), range(len(grid[-1]))
     # have to use "crawling searcher" to determine which verticies are immediately reachable (and how far away)
     adjacent_vertices = {vertex: {} for vertex in vertices}
@@ -69,7 +82,7 @@ def get_adjacents(grid, vertices):
                 adjacent_vertices[vertex][(r_i, c_i)] = dist
                 continue
             # try searching anything in valid direction otherwise
-            for row_shift, col_shift in MOVES[grid[r_i][c_i]]:
+            for row_shift, col_shift in valid_moves[grid[r_i][c_i]]:
                 row_u, col_u = r_i+row_shift, c_i+col_shift
                 if row_u not in row_bounds or col_u not in col_bounds:
                     continue  # as long as it is within the grid
@@ -87,6 +100,8 @@ def dfs_longest(adjacents, dfs_from, dfs_to, visited=None):
     dist = 0
     for neighbour in adjacents[dfs_from]:
         # base case
+        if neighbour in visited:
+            continue
         if neighbour == dfs_to:
             return adjacents[dfs_from][dfs_to]
         # standard recursion
